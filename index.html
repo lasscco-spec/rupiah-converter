@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="IDR Convert" />
+<title>IDR Converter</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --bg: #f2f2f7;
+    --card: #ffffff;
+    --text: #1c1c1e;
+    --text2: #6c6c70;
+    --text3: #aeaeb2;
+    --border: #e5e5ea;
+    --accent: #007aff;
+    --danger: #ff3b30;
+    --success: #34c759;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1e;
+      --card: #2c2c2e;
+      --text: #ffffff;
+      --text2: #aeaeb2;
+      --text3: #636366;
+      --border: #3a3a3c;
+      --accent: #0a84ff;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .statusbar-pad {
+    height: env(safe-area-inset-top);
+    background: var(--bg);
+  }
+
+  .header {
+    padding: 16px 20px 12px;
+    text-align: center;
+  }
+
+  .header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: var(--text);
+  }
+
+  .header p {
+    font-size: 13px;
+    color: var(--text2);
+    margin-top: 2px;
+  }
+
+  .input-section {
+    margin: 0 16px 20px;
+    background: var(--card);
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  .flag-big { font-size: 28px; line-height: 1; }
+
+  .input-inner { flex: 1; min-width: 0; }
+
+  .input-inner label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  #idrInput {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    outline: none;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    letter-spacing: -0.5px;
+  }
+
+  #idrInput::placeholder { color: var(--text3); }
+
+  .clear-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--border);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--text2);
+    flex-shrink: 0;
+  }
+
+  .rate-info {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text3);
+    margin: -12px 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .dot.loading { background: var(--text3); animation: blink 1s infinite; }
+  .dot.error { background: var(--danger); }
+
+  @keyframes blink { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 0 16px;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card select {
+    border: none;
+    background: var(--bg);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 6px;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    width: 100%;
+    margin-bottom: 10px;
+    -webkit-appearance: auto;
+    cursor: pointer;
+  }
+
+  .card-body { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
+
+  .card-country {
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .card-amount {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.4px;
+    line-height: 1.15;
+    word-break: break-all;
+  }
+
+  .card-rate {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 4px;
+  }
+
+  .card-loading {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .refresh-row {
+    padding: 16px 16px 8px;
+    text-align: center;
+  }
+
+  .refresh-btn {
+    background: var(--card);
+    border: none;
+    border-radius: 12px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .hint {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text3);
+    padding: 8px 20px 20px;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="statusbar-pad"></div>
+
+<div class="header">
+  <h1>🇮🇩 Rupiah Converter</h1>
+  <p>Live exchange rates</p>
+</div>
+
+<div class="input-section">
+  <span class="flag-big">💵</span>
+  <div class="input-inner">
+    <label>IDR — Indonesian Rupiah</label>
+    <input id="idrInput" type="number" inputmode="numeric" placeholder="100,000" value="100000" />
+  </div>
+  <button class="clear-btn" onclick="clearInput()">✕</button>
+</div>
+
+<div class="rate-info">
+  <span class="dot loading" id="dot"></span>
+  <span id="rateTime">Fetching live rates…</span>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="refresh-row">
+  <button class="refresh-btn" onclick="fetchRates()">↻ Refresh Rates</button>
+</div>
+
+<div class="hint">
+  Tap a country flag to change currency.<br>
+  Add to Home Screen for quick access.
+</div>
+
+<script>
+const CURRENCIES = [
+  {code:"USD",name:"US Dollar",country:"United States",flag:"🇺🇸"},
+  {code:"KRW",name:"Korean Won",country:"South Korea",flag:"🇰🇷"},
+  {code:"JPY",name:"Japanese Yen",country:"Japan",flag:"🇯🇵"},
+  {code:"EUR",name:"Euro",country:"Eurozone",flag:"🇪🇺"},
+  {code:"GBP",name:"British Pound",country:"United Kingdom",flag:"🇬🇧"},
+  {code:"AUD",name:"Australian Dollar",country:"Australia",flag:"🇦🇺"},
+  {code:"SGD",name:"Singapore Dollar",country:"Singapore",flag:"🇸🇬"},
+  {code:"MYR",name:"Malaysian Ringgit",country:"Malaysia",flag:"🇲🇾"},
+  {code:"THB",name:"Thai Baht",country:"Thailand",flag:"🇹🇭"},
+  {code:"CNY",name:"Chinese Yuan",country:"China",flag:"🇨🇳"},
+  {code:"HKD",name:"HK Dollar",country:"Hong Kong",flag:"🇭🇰"},
+  {code:"INR",name:"Indian Rupee",country:"India",flag:"🇮🇳"},
+  {code:"CAD",name:"Canadian Dollar",country:"Canada",flag:"🇨🇦"},
+  {code:"CHF",name:"Swiss Franc",country:"Switzerland",flag:"🇨🇭"},
+  {code:"NZD",name:"NZ Dollar",country:"New Zealand",flag:"🇳🇿"},
+  {code:"PHP",name:"Philippine Peso",country:"Philippines",flag:"🇵🇭"},
+  {code:"VND",name:"Vietnamese Dong",country:"Vietnam",flag:"🇻🇳"},
+  {code:"TWD",name:"Taiwan Dollar",country:"Taiwan",flag:"🇹🇼"},
+];
+
+let rates = {};
+let slots = ["USD","KRW","JPY","SGD"];
+
+function noDecimals(code) {
+  return ["KRW","JPY","VND","IDR"].includes(code);
+}
+
+function fmt(amount, code) {
+  if (amount === null || isNaN(amount)) return "—";
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: noDecimals(code) ? 0 : 2,
+    minimumFractionDigits: noDecimals(code) ? 0 : 2,
+  }).format(amount);
+}
+
+function buildGrid() {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  slots.forEach((code, idx) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.id = "card_" + idx;
+
+    const sel = document.createElement("select");
+    CURRENCIES.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.code;
+      opt.textContent = c.flag + " " + c.code;
+      if (c.code === code) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener("change", e => {
+      slots[idx] = e.target.value;
+      updateCard(idx);
+    });
+    card.appendChild(sel);
+
+    const body = document.createElement("div");
+    body.className = "card-body";
+    body.id = "body_" + idx;
+    body.innerHTML = '<div class="card-loading"><div class="spinner"></div></div>';
+    card.appendChild(body);
+
+    grid.appendChild(card);
+  });
+}
+
+function updateCard(idx) {
+  const code = slots[idx];
+  const cur = CURRENCIES.find(c => c.code === code);
+  const body = document.getElementById("body_" + idx);
+  const idr = parseFloat(document.getElementById("idrInput").value) || 0;
+
+  if (!rates[code]) {
+    body.innerHTML = '<div class="card-loading"><div class="spinner"></div></div>';
+    return;
+  }
+
+  const rate = rates[code];
+  const converted = idr * rate;
+  const rateStr = rate < 0.0001 ? rate.toExponential(3) : parseFloat(rate.toFixed(8)).toString();
+
+  body.innerHTML = `
+    <div class="card-country"><span>${cur.flag}</span><span>${cur.country}</span></div>
+    <div class="card-amount">${cur.code} ${fmt(converted, code)}</div>
+    <div class="card-rate">1 IDR = ${rateStr} ${cur.code}</div>
+  `;
+}
+
+function updateAll() {
+  slots.forEach((_, i) => updateCard(i));
+}
+
+function clearInput() {
+  const input = document.getElementById("idrInput");
+  input.value = "";
+  input.focus();
+  updateAll();
+}
+
+async function fetchRates() {
+  const dot = document.getElementById("dot");
+  const timeEl = document.getElementById("rateTime");
+  dot.className = "dot loading";
+  timeEl.textContent = "Fetching live rates…";
+
+  try {
+    const res = await fetch("https://api.exchangerate-api.com/v4/latest/IDR");
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    rates = data.rates;
+    const now = new Date();
+    dot.className = "dot";
+    timeEl.textContent = "Live · Updated " + now.toLocaleTimeString("en-US", {hour:"2-digit", minute:"2-digit"});
+    updateAll();
+  } catch(e) {
+    dot.className = "dot error";
+    timeEl.textContent = "Could not load rates. Tap Refresh.";
+    slots.forEach((_, i) => {
+      const body = document.getElementById("body_" + i);
+      if (body) body.innerHTML = '<div class="card-loading" style="font-size:11px;color:var(--text3)">Unavailable</div>';
+    });
+  }
+}
+
+document.getElementById("idrInput").addEventListener("input", updateAll);
+
+buildGrid();
+fetchRates();
+</script>
+</body>
+</html>
