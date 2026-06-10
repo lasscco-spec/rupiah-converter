@@ -239,29 +239,23 @@ body {
     <span style="font-size:20px;font-weight:700;color:var(--text2);flex-shrink:0;letter-spacing:-0.5px;line-height:1;">Rp</span>
     <div class="input-inner">
       <label id="inputLabel">IDR — Indonesian Rupiah</label>
-      <div style="display:flex;align-items:baseline;gap:1px;">
-        <input id="idrInput" type="number" inputmode="numeric" placeholder="100000" value="100000" style="flex:1;min-width:0;" />
-        <span id="kSuffix" style="display:none;font-size:28px;font-weight:700;color:var(--text3);letter-spacing:-0.5px;line-height:1;">,000</span>
+      <div style="position:relative;display:flex;align-items:baseline;">
+        <span id="idrMirror" style="position:absolute;top:0;left:0;font-size:28px;font-weight:700;letter-spacing:-0.5px;white-space:pre;visibility:hidden;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;"></span>
+        <input id="idrInput" type="number" inputmode="numeric" placeholder="100000" value="100000" style="flex:1;min-width:0;position:relative;z-index:1;" />
+        <span id="kSuffix" style="display:none;font-size:28px;font-weight:700;color:#8e8e93;letter-spacing:-0.5px;line-height:1;position:absolute;left:0;top:0;pointer-events:none;z-index:0;"></span>
       </div>
     </div>
     <button class="clear-btn" onclick="clearInput()">✕</button>
   </div>
 
   <div class="toggle-row">
-    <div class="toggle-label">
-      <span class="tl-main">K-mode</span>
-      <span class="tl-sub">Type thousands  (50 → 50,000 IDR)</span>
-    </div>
+    <span class="tl-main">K-mode</span>
     <label class="toggle-switch">
       <input type="checkbox" id="kToggle" onchange="onKToggle()" />
       <div class="toggle-track">
         <div class="toggle-thumb"></div>
       </div>
     </label>
-  </div>
-
-  <div class="k-preview" id="kPreview">
-    <span id="kInput">—</span> k &nbsp;=&nbsp; <strong id="kResult">—</strong> IDR
   </div>
 </div>
 
@@ -329,27 +323,31 @@ function getRealIDR() {
 function onKToggle() {
   kMode = document.getElementById("kToggle").checked;
   const label = document.getElementById("inputLabel");
-  const preview = document.getElementById("kPreview");
   const suffix = document.getElementById("kSuffix");
   if (kMode) {
     label.textContent = "IDR (×1,000) — K-mode ON";
-    preview.classList.add("visible");
-    suffix.style.display = "inline";
-    updateKPreview();
+    suffix.style.display = "block";
+    updateSuffixPos();
   } else {
     label.textContent = "IDR — Indonesian Rupiah";
-    preview.classList.remove("visible");
     suffix.style.display = "none";
   }
   updateAll();
 }
 
-function updateKPreview() {
-  const raw = parseFloat(document.getElementById("idrInput").value) || 0;
-  const real = raw * 1000;
-  document.getElementById("kInput").textContent = fmt(raw, "IDR") + " k";
-  document.getElementById("kResult").textContent = fmt(real, "IDR");
+function updateSuffixPos() {
+  if (!kMode) return;
+  const input = document.getElementById("idrInput");
+  const mirror = document.getElementById("idrMirror");
+  const suffix = document.getElementById("kSuffix");
+  const val = input.value || "";
+  mirror.textContent = val;
+  const w = mirror.getBoundingClientRect().width;
+  suffix.style.left = w + "px";
+  suffix.textContent = ",000";
 }
+
+
 
 function addSlot(idx) {
   // Pick first currency not already in slots
@@ -452,7 +450,7 @@ function updateCard(idx) {
 }
 
 function updateAll() {
-  if (kMode) updateKPreview();
+  if (kMode) updateSuffixPos();
   slots.forEach((code, i) => { if (code) updateCard(i); });
 }
 
