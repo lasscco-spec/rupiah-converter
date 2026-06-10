@@ -8,245 +8,220 @@
 <meta name="apple-mobile-web-app-title" content="IDR Convert" />
 <title>IDR Converter</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
+:root {
+  --bg: #f2f2f7;
+  --card: #ffffff;
+  --text: #1c1c1e;
+  --text2: #6c6c70;
+  --text3: #aeaeb2;
+  --border: #e5e5ea;
+  --accent: #007aff;
+  --danger: #ff3b30;
+  --success: #34c759;
+}
+
+@media (prefers-color-scheme: dark) {
   :root {
-    --bg: #f2f2f7;
-    --card: #ffffff;
-    --text: #1c1c1e;
-    --text2: #6c6c70;
-    --text3: #aeaeb2;
-    --border: #e5e5ea;
-    --accent: #007aff;
-    --danger: #ff3b30;
-    --success: #34c759;
+    --bg: #1c1c1e;
+    --card: #2c2c2e;
+    --text: #ffffff;
+    --text2: #aeaeb2;
+    --text3: #636366;
+    --border: #3a3a3c;
+    --accent: #0a84ff;
   }
+}
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #1c1c1e;
-      --card: #2c2c2e;
-      --text: #ffffff;
-      --text2: #aeaeb2;
-      --text3: #636366;
-      --border: #3a3a3c;
-      --accent: #0a84ff;
-    }
-  }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
+}
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100dvh;
-    padding-bottom: env(safe-area-inset-bottom);
-  }
+.statusbar-pad { height: env(safe-area-inset-top); background: var(--bg); }
 
-  .statusbar-pad {
-    height: env(safe-area-inset-top);
-    background: var(--bg);
-  }
+.header { padding: 16px 20px 12px; text-align: center; }
+.header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.4px; color: var(--text); }
+.header p { font-size: 13px; color: var(--text2); margin-top: 2px; }
 
-  .header {
-    padding: 16px 20px 12px;
-    text-align: center;
-  }
+.input-section {
+  margin: 0 16px 8px;
+  background: var(--card);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
 
-  .header h1 {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -0.4px;
-    color: var(--text);
-  }
+.input-row { display: flex; align-items: center; gap: 10px; }
+.flag-big { font-size: 28px; line-height: 1; }
+.input-inner { flex: 1; min-width: 0; }
+.input-inner label {
+  display: block;
+  font-size: 11px; font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
 
-  .header p {
-    font-size: 13px;
-    color: var(--text2);
-    margin-top: 2px;
-  }
+#idrInput {
+  width: 100%;
+  border: none; background: transparent;
+  font-size: 28px; font-weight: 700;
+  color: var(--text); outline: none;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  letter-spacing: -0.5px;
+}
+#idrInput::placeholder { color: var(--text3); }
 
-  .input-section {
-    margin: 0 16px 20px;
-    background: var(--card);
-    border-radius: 16px;
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  }
+.clear-btn {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--border); border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: var(--text2); flex-shrink: 0;
+}
 
-  .flag-big { font-size: 28px; line-height: 1; }
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 12px; padding-top: 12px;
+  border-top: 0.5px solid var(--border);
+}
 
-  .input-inner { flex: 1; min-width: 0; }
+.toggle-label { display: flex; flex-direction: column; gap: 2px; }
+.toggle-label .tl-main { font-size: 13px; font-weight: 600; color: var(--text); }
+.toggle-label .tl-sub { font-size: 11px; color: var(--text2); }
 
-  .input-inner label {
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text2);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    margin-bottom: 2px;
-  }
+.toggle-switch { position: relative; width: 51px; height: 31px; flex-shrink: 0; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-track {
+  position: absolute; inset: 0;
+  background: var(--border); border-radius: 31px;
+  transition: background 0.2s; cursor: pointer;
+}
+.toggle-thumb {
+  position: absolute; top: 2px; left: 2px;
+  width: 27px; height: 27px;
+  background: #fff; border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  transition: transform 0.2s; pointer-events: none;
+}
+.toggle-switch input:checked + .toggle-track { background: var(--success); }
+.toggle-switch input:checked + .toggle-track .toggle-thumb { transform: translateX(20px); }
 
-  #idrInput {
-    width: 100%;
-    border: none;
-    background: transparent;
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--text);
-    outline: none;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-    letter-spacing: -0.5px;
-  }
+.k-preview {
+  display: none;
+  margin-top: 10px;
+  font-size: 12px; color: var(--text2);
+  padding: 6px 10px;
+  background: var(--bg); border-radius: 8px;
+  text-align: center; line-height: 1.6;
+}
+.k-preview.visible { display: block; }
+.k-preview strong { color: var(--accent); font-weight: 700; }
 
-  #idrInput::placeholder { color: var(--text3); }
+.rate-info {
+  text-align: center; font-size: 11px; color: var(--text3);
+  margin: 8px 0 14px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); display: inline-block; flex-shrink: 0; }
+.dot.loading { background: var(--text3); animation: blink 1s infinite; }
+.dot.error { background: var(--danger); }
+@keyframes blink { 0%,100%{opacity:0.3} 50%{opacity:1} }
 
-  .clear-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: var(--border);
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    color: var(--text2);
-    flex-shrink: 0;
-  }
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 0 16px;
+}
 
-  .rate-info {
-    text-align: center;
-    font-size: 11px;
-    color: var(--text3);
-    margin: -12px 0 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-  }
+/* Active currency card */
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  min-height: 120px;
+  display: flex; flex-direction: column;
+}
 
-  .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--success);
-    display: inline-block;
-    flex-shrink: 0;
-  }
+.card select {
+  border: none;
+  background: var(--bg);
+  border-radius: 8px;
+  font-size: 12px; font-weight: 500;
+  padding: 5px 6px;
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  width: 100%; margin-bottom: 10px;
+  -webkit-appearance: auto; cursor: pointer;
+}
 
-  .dot.loading { background: var(--text3); animation: blink 1s infinite; }
-  .dot.error { background: var(--danger); }
+.card-body { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
+.card-country { font-size: 12px; color: var(--text2); margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
+.card-amount { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.4px; line-height: 1.15; word-break: break-all; }
+.card-rate { font-size: 10px; color: var(--text3); margin-top: 4px; }
+.card-loading { flex: 1; display: flex; align-items: center; justify-content: center; }
 
-  @keyframes blink { 0%,100%{opacity:0.3} 50%{opacity:1} }
+/* Empty / + slot */
+.card-empty {
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  min-height: 120px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  border: 1.5px dashed var(--border);
+  transition: background 0.15s;
+}
+.card-empty:active { background: var(--bg); }
+.plus-icon {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; color: var(--accent);
+  font-weight: 300;
+  line-height: 1;
+}
 
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    padding: 0 16px;
-  }
+/* Remove btn on active card */
+.card-header { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+.card-header select { flex: 1; margin-bottom: 0; }
+.remove-btn {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--border); border: none;
+  font-size: 12px; color: var(--text2);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+}
 
-  .card {
-    background: var(--card);
-    border-radius: 16px;
-    padding: 14px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    min-height: 120px;
-    display: flex;
-    flex-direction: column;
-  }
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-  .card select {
-    border: none;
-    background: var(--bg);
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 500;
-    padding: 5px 6px;
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-    width: 100%;
-    margin-bottom: 10px;
-    -webkit-appearance: auto;
-    cursor: pointer;
-  }
+.refresh-row { padding: 16px 16px 8px; text-align: center; }
+.refresh-btn {
+  background: var(--card); border: none; border-radius: 12px;
+  padding: 10px 24px; font-size: 14px; font-weight: 600; color: var(--accent);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  width: 100%; max-width: 200px;
+}
 
-  .card-body { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
-
-  .card-country {
-    font-size: 12px;
-    color: var(--text2);
-    margin-bottom: 4px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .card-amount {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -0.4px;
-    line-height: 1.15;
-    word-break: break-all;
-  }
-
-  .card-rate {
-    font-size: 10px;
-    color: var(--text3);
-    margin-top: 4px;
-  }
-
-  .card-loading {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .spinner {
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .refresh-row {
-    padding: 16px 16px 8px;
-    text-align: center;
-  }
-
-  .refresh-btn {
-    background: var(--card);
-    border: none;
-    border-radius: 12px;
-    padding: 10px 24px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--accent);
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-    cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    width: 100%;
-    max-width: 200px;
-  }
-
-  .hint {
-    text-align: center;
-    font-size: 11px;
-    color: var(--text3);
-    padding: 8px 20px 20px;
-    line-height: 1.5;
-  }
+.hint { text-align: center; font-size: 11px; color: var(--text3); padding: 8px 20px 20px; line-height: 1.6; }
 </style>
 </head>
 <body>
@@ -256,15 +231,35 @@
 <div class="header">
   <h1>🇮🇩 Rupiah Converter</h1>
   <p>Live exchange rates</p>
+  <p style="font-size:11px;color:var(--text3);margin-top:2px;">by hottie</p>
 </div>
 
 <div class="input-section">
-  <span class="flag-big">💵</span>
-  <div class="input-inner">
-    <label>IDR — Indonesian Rupiah</label>
-    <input id="idrInput" type="number" inputmode="numeric" placeholder="100,000" value="100000" />
+  <div class="input-row">
+    <span class="flag-big">💵</span>
+    <div class="input-inner">
+      <label id="inputLabel">IDR — Indonesian Rupiah</label>
+      <input id="idrInput" type="number" inputmode="numeric" placeholder="100000" value="100000" />
+    </div>
+    <button class="clear-btn" onclick="clearInput()">✕</button>
   </div>
-  <button class="clear-btn" onclick="clearInput()">✕</button>
+
+  <div class="toggle-row">
+    <div class="toggle-label">
+      <span class="tl-main">K-mode</span>
+      <span class="tl-sub">Type thousands  (50 → 50,000 IDR)</span>
+    </div>
+    <label class="toggle-switch">
+      <input type="checkbox" id="kToggle" onchange="onKToggle()" />
+      <div class="toggle-track">
+        <div class="toggle-thumb"></div>
+      </div>
+    </label>
+  </div>
+
+  <div class="k-preview" id="kPreview">
+    <span id="kInput">—</span> k &nbsp;=&nbsp; <strong id="kResult">—</strong> IDR
+  </div>
 </div>
 
 <div class="rate-info">
@@ -279,8 +274,8 @@
 </div>
 
 <div class="hint">
-  Tap a country flag to change currency.<br>
-  Add to Home Screen for quick access.
+  Tap <strong style="color:var(--accent)">+</strong> to add up to 4 currencies<br>
+  Add to Home Screen for quick access
 </div>
 
 <script>
@@ -305,8 +300,11 @@ const CURRENCIES = [
   {code:"TWD",name:"Taiwan Dollar",country:"Taiwan",flag:"🇹🇼"},
 ];
 
+const MAX_SLOTS = 4;
 let rates = {};
-let slots = ["USD","KRW","JPY","SGD"];
+// null = empty slot (shows + button), string = currency code
+let slots = [null, null, null, null];
+let kMode = false;
 
 function noDecimals(code) {
   return ["KRW","JPY","VND","IDR"].includes(code);
@@ -320,43 +318,116 @@ function fmt(amount, code) {
   }).format(amount);
 }
 
-function buildGrid() {
+function getRealIDR() {
+  const raw = parseFloat(document.getElementById("idrInput").value) || 0;
+  return kMode ? raw * 1000 : raw;
+}
+
+function onKToggle() {
+  kMode = document.getElementById("kToggle").checked;
+  const label = document.getElementById("inputLabel");
+  const preview = document.getElementById("kPreview");
+  if (kMode) {
+    label.textContent = "IDR (×1,000) — K-mode ON";
+    preview.classList.add("visible");
+    updateKPreview();
+  } else {
+    label.textContent = "IDR — Indonesian Rupiah";
+    preview.classList.remove("visible");
+  }
+  updateAll();
+}
+
+function updateKPreview() {
+  const raw = parseFloat(document.getElementById("idrInput").value) || 0;
+  const real = raw * 1000;
+  document.getElementById("kInput").textContent = fmt(raw, "IDR") + " k";
+  document.getElementById("kResult").textContent = fmt(real, "IDR");
+}
+
+function addSlot(idx) {
+  // Pick first currency not already in slots
+  const used = slots.filter(Boolean);
+  const first = CURRENCIES.find(c => !used.includes(c.code));
+  slots[idx] = first ? first.code : "USD";
+  renderGrid();
+  updateCard(idx);
+}
+
+function removeSlot(idx) {
+  slots[idx] = null;
+  renderGrid();
+}
+
+function renderGrid() {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
+
   slots.forEach((code, idx) => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.id = "card_" + idx;
+    if (code === null) {
+      // Empty + card
+      const empty = document.createElement("div");
+      empty.className = "card-empty";
+      empty.onclick = () => addSlot(idx);
+      empty.innerHTML = '<div class="plus-icon">+</div>';
+      grid.appendChild(empty);
+    } else {
+      // Active card
+      const card = document.createElement("div");
+      card.className = "card";
+      card.id = "card_" + idx;
 
-    const sel = document.createElement("select");
-    CURRENCIES.forEach(c => {
-      const opt = document.createElement("option");
-      opt.value = c.code;
-      opt.textContent = c.flag + " " + c.code;
-      if (c.code === code) opt.selected = true;
-      sel.appendChild(opt);
-    });
-    sel.addEventListener("change", e => {
-      slots[idx] = e.target.value;
-      updateCard(idx);
-    });
-    card.appendChild(sel);
+      // Header: select + remove btn
+      const header = document.createElement("div");
+      header.className = "card-header";
 
-    const body = document.createElement("div");
-    body.className = "card-body";
-    body.id = "body_" + idx;
-    body.innerHTML = '<div class="card-loading"><div class="spinner"></div></div>';
-    card.appendChild(body);
+      const sel = document.createElement("select");
+      CURRENCIES.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.code;
+        opt.textContent = c.flag + " " + c.code;
+        if (c.code === code) opt.selected = true;
+        sel.appendChild(opt);
+      });
+      sel.addEventListener("change", e => {
+        slots[idx] = e.target.value;
+        updateCard(idx);
+      });
 
-    grid.appendChild(card);
+      const rmBtn = document.createElement("button");
+      rmBtn.className = "remove-btn";
+      rmBtn.textContent = "✕";
+      rmBtn.onclick = () => removeSlot(idx);
+
+      header.appendChild(sel);
+      header.appendChild(rmBtn);
+      card.appendChild(header);
+
+      const body = document.createElement("div");
+      body.className = "card-body";
+      body.id = "body_" + idx;
+      body.innerHTML = Object.keys(rates).length
+        ? ""
+        : '<div class="card-loading"><div class="spinner"></div></div>';
+      card.appendChild(body);
+
+      grid.appendChild(card);
+    }
+  });
+
+  // Fill in values for active cards
+  slots.forEach((code, idx) => {
+    if (code && Object.keys(rates).length) updateCard(idx);
   });
 }
 
 function updateCard(idx) {
   const code = slots[idx];
+  if (!code) return;
   const cur = CURRENCIES.find(c => c.code === code);
   const body = document.getElementById("body_" + idx);
-  const idr = parseFloat(document.getElementById("idrInput").value) || 0;
+  if (!body) return;
+  const idr = getRealIDR();
 
   if (!rates[code]) {
     body.innerHTML = '<div class="card-loading"><div class="spinner"></div></div>';
@@ -375,7 +446,8 @@ function updateCard(idx) {
 }
 
 function updateAll() {
-  slots.forEach((_, i) => updateCard(i));
+  if (kMode) updateKPreview();
+  slots.forEach((code, i) => { if (code) updateCard(i); });
 }
 
 function clearInput() {
@@ -403,16 +475,12 @@ async function fetchRates() {
   } catch(e) {
     dot.className = "dot error";
     timeEl.textContent = "Could not load rates. Tap Refresh.";
-    slots.forEach((_, i) => {
-      const body = document.getElementById("body_" + i);
-      if (body) body.innerHTML = '<div class="card-loading" style="font-size:11px;color:var(--text3)">Unavailable</div>';
-    });
   }
 }
 
 document.getElementById("idrInput").addEventListener("input", updateAll);
 
-buildGrid();
+renderGrid();
 fetchRates();
 </script>
 </body>
