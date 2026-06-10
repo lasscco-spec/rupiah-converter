@@ -236,10 +236,13 @@ body {
 
 <div class="input-section">
   <div class="input-row">
-    <span class="flag-big">💵</span>
+    <span style="font-size:20px;font-weight:700;color:var(--text2);flex-shrink:0;letter-spacing:-0.5px;line-height:1;">Rp</span>
     <div class="input-inner">
       <label id="inputLabel">IDR — Indonesian Rupiah</label>
-      <input id="idrInput" type="number" inputmode="numeric" placeholder="100000" value="100000" />
+      <div style="display:flex;align-items:baseline;gap:1px;">
+        <input id="idrInput" type="number" inputmode="numeric" placeholder="100000" value="100000" style="flex:1;min-width:0;" />
+        <span id="kSuffix" style="display:none;font-size:28px;font-weight:700;color:var(--text3);letter-spacing:-0.5px;line-height:1;">,000</span>
+      </div>
     </div>
     <button class="clear-btn" onclick="clearInput()">✕</button>
   </div>
@@ -327,13 +330,16 @@ function onKToggle() {
   kMode = document.getElementById("kToggle").checked;
   const label = document.getElementById("inputLabel");
   const preview = document.getElementById("kPreview");
+  const suffix = document.getElementById("kSuffix");
   if (kMode) {
     label.textContent = "IDR (×1,000) — K-mode ON";
     preview.classList.add("visible");
+    suffix.style.display = "inline";
     updateKPreview();
   } else {
     label.textContent = "IDR — Indonesian Rupiah";
     preview.classList.remove("visible");
+    suffix.style.display = "none";
   }
   updateAll();
 }
