@@ -68,14 +68,6 @@ body {
   margin-bottom: 2px;
 }
 
-#idrInput {
-  width: 100%;
-  border: none; background: transparent;
-  font-size: 28px; font-weight: 700;
-  color: var(--text); outline: none;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-  letter-spacing: -0.5px;
-}
 #idrInput::placeholder { color: var(--text3); }
 
 .clear-btn {
@@ -239,10 +231,10 @@ body {
     <span style="font-size:20px;font-weight:700;color:var(--text2);flex-shrink:0;letter-spacing:-0.5px;line-height:1;">Rp</span>
     <div class="input-inner">
       <label id="inputLabel">IDR — Indonesian Rupiah</label>
-      <div style="position:relative;display:flex;align-items:baseline;">
+      <div style="position:relative;overflow:visible;">
         <span id="idrMirror" style="position:absolute;top:0;left:0;font-size:28px;font-weight:700;letter-spacing:-0.5px;white-space:pre;visibility:hidden;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;"></span>
-        <input id="idrInput" type="number" inputmode="numeric" placeholder="100000" value="100000" style="flex:1;min-width:0;position:relative;z-index:1;" />
-        <span id="kSuffix" style="display:none;font-size:28px;font-weight:700;color:#8e8e93;letter-spacing:-0.5px;line-height:1;position:absolute;left:0;top:0;pointer-events:none;z-index:0;"></span>
+        <input id="idrInput" type="number" inputmode="numeric" placeholder="0" style="width:100%;border:none;background:transparent;font-size:28px;font-weight:700;color:var(--text);outline:none;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;letter-spacing:-0.5px;display:block;" />
+        <span id="kSuffix" style="display:none;font-size:28px;font-weight:700;color:#8e8e93;letter-spacing:-0.5px;position:absolute;top:0;left:0;pointer-events:none;"></span>
       </div>
     </div>
     <button class="clear-btn" onclick="clearInput()">✕</button>
@@ -324,12 +316,17 @@ function onKToggle() {
   kMode = document.getElementById("kToggle").checked;
   const label = document.getElementById("inputLabel");
   const suffix = document.getElementById("kSuffix");
+  const input = document.getElementById("idrInput");
   if (kMode) {
     label.textContent = "IDR (×1,000) — K-mode ON";
+    input.value = "";
+    input.placeholder = "0";
     suffix.style.display = "block";
     updateSuffixPos();
   } else {
     label.textContent = "IDR — Indonesian Rupiah";
+    input.value = "";
+    input.placeholder = "0";
     suffix.style.display = "none";
   }
   updateAll();
@@ -340,11 +337,21 @@ function updateSuffixPos() {
   const input = document.getElementById("idrInput");
   const mirror = document.getElementById("idrMirror");
   const suffix = document.getElementById("kSuffix");
-  const val = input.value || "";
+  const val = input.value !== "" ? input.value : "0";
+  // Sync mirror font exactly to input computed style
+  const cs = window.getComputedStyle(input);
+  mirror.style.font = cs.font;
+  mirror.style.letterSpacing = cs.letterSpacing;
   mirror.textContent = val;
-  const w = mirror.getBoundingClientRect().width;
-  suffix.style.left = w + "px";
-  suffix.textContent = ",000";
+  requestAnimationFrame(() => {
+    const inputRect = input.getBoundingClientRect();
+    const mirrorRect = mirror.getBoundingClientRect();
+    const parent = input.parentElement.getBoundingClientRect();
+    // Align suffix top to input top, left to right edge of mirror text
+    suffix.style.top = (inputRect.top - parent.top) + "px";
+    suffix.style.left = (mirrorRect.width) + "px";
+    suffix.textContent = ",000";
+  });
 }
 
 
